@@ -13,7 +13,39 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var systemNamespaces = []string{} // TODO maybe we could get this list from environments?
+var systemNamespaces = []string{
+	"calico-apiserver",
+	"calico-system",
+	"cert-manager",
+	"concourse",
+	"gatekeeper-system",
+	"ingress-controllers",
+	"kube-system",
+	"kuberos",
+	"logging",
+	"monitoring",
+	"tigera-operator",
+	"trivy-system",
+	"velero",
+	"cloud-platform-canary-app-eks",
+} // TODO maybe we could get this list from environments (anything that's not in env)?
+
+func getGithubTeamName(ns string) string {
+	var githubTeamName string
+	var err error
+
+	githubTeamName, err = namespace.GetTeamName(ns)
+	if err != nil {
+		return "webops"
+	}
+
+	isSystemNs := utils.Contains(systemNamespaces, ns)
+	if isSystemNs {
+		githubTeamName = "webops"
+	}
+
+	return githubTeamName
+}
 
 func Mutate(body []byte) ([]byte, error) {
 	admReview := v1.AdmissionReview{}
@@ -34,15 +66,7 @@ func Mutate(body []byte) ([]byte, error) {
 			return nil, fmt.Errorf("unable unmarshal pod json object %v", err)
 		}
 
-		isSystemNs := utils.Contains(systemNamespaces, pod.GetNamespace())
-		if isSystemNs {
-			return nil, fmt.Errorf("do not need to label this namespace as it is not a user namespace")
-		}
-
-		githubTeamName, nsErr := namespace.GetTeamName(pod.GetNamespace())
-		if nsErr != nil {
-			return nil, fmt.Errorf("unable to get pod namespace %v", nsErr)
-		}
+		githubTeamName := getGithubTeamName(pod.GetNamespace())
 
 		// set response options
 		resp.Allowed = true

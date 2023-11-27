@@ -9,10 +9,8 @@ import (
 	"github.com/ministryofjustice/cloud-platform-label-pods/utils"
 )
 
-func InitGetCheckPR(r *gin.Engine) {
+func initMutatePod(r *gin.Engine) {
 	r.POST("/mutate/pod", func(c *gin.Context) {
-		// if not a system nameespace then continue
-
 		body, err := ioutil.ReadAll(c.Request.Body)
 		defer c.Request.Body.Close()
 
@@ -25,7 +23,7 @@ func InitGetCheckPR(r *gin.Engine) {
 			utils.SendResponse(c, errObj)
 		}
 
-		mutated, err := m.Mutate(body, "random")
+		mutated, err := m.Mutate(body)
 		if err != nil {
 			errObj := utils.Response{
 				Status: http.StatusInternalServerError,

@@ -1,0 +1,7 @@
+schemaVersion: "2.0.0"
+fileExistenceTests:
+  - name: "cloud-platform-label-pods api binary"
+    path: "/app/main"
+    shouldExist: true
+
+

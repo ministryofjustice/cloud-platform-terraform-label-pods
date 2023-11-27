@@ -11,6 +11,8 @@ import (
 )
 
 func InitRouter(r *gin.Engine) {
+	initMutatePod(r)
+
 	r.GET("/healthz", func(c *gin.Context) {
 		c.Status(http.StatusOK)
 	})
