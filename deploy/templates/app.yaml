@@ -2,6 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: api
+  labels:
+    name: api
 spec:
   replicas: 2
   selector:
@@ -13,22 +15,43 @@ spec:
         name: api
     spec:
       containers:
-        - name: application
-          image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
+        - name: api
+          # image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
+          image: jaskaransarkaria/cloud-platform-label-pods:test14
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
           readinessProbe:
               httpGet:
+                scheme: HTTPS
                 path: /healthz
                 port: 3000
               initialDelaySeconds: 2
+          volumeMounts:
+            - mountPath: "/etc/ssl/certs"
+              name: tmp
+              readOnly: false
           env:
-            - name: API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: go-get-module-api-key
-                  key: api_key
             - name: GIN_MODE
               value: "release"
+      initContainers:
+        - name: init
+          # image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
+          image: jaskaransarkaria/cloud-platform-label-pods:test14
+          command: ["/bin/sh", "-c"]
+          args: ["cp -r /etc/ssl/certs/* /artifact/ && cp /etc/ssl/tmp/tls.crt /artifact && cp /etc/ssl/tmp/ca.crt /artifact && cp /etc/ssl/tmp/tls.key /artifact"]
+          volumeMounts:
+          - name: ssl-certs
+            mountPath: /etc/ssl/tmp
+            readOnly: false
+          - name: tmp
+            mountPath: /artifact
+            readOnly: false
+      volumes:
+        - name: tmp
+          emptyDir: {}
+        - name: ssl-certs
+          secret:
+            secretName: webhook-server-cert 
+
                     

@@ -33,11 +33,6 @@ func initMutatePod(r *gin.Engine) {
 			utils.SendResponse(c, errObj)
 		}
 
-		// TODO: this needs to be sent back in the correct obj adm review
-		obj := utils.Response{
-			Status: http.StatusOK,
-			Data:   mutated,
-		}
-		utils.SendResponse(c, obj)
+		c.Writer.Write(mutated)
 	})
 }

@@ -11,7 +11,7 @@ func main() {
 
 	r := init_app.InitGin(ginMode)
 
-	err := r.Run(":3000")
+	err := r.RunTLS(":3000", "/etc/ssl/certs/tls.crt", "/etc/ssl/certs/tls.key")
 	if err != nil {
 		log.Fatal("Error starting server: ", err)
 	}

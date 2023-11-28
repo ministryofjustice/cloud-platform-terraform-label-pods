@@ -20,16 +20,14 @@ func GetTeamName(ns string) (string, error) {
 		log.Fatal(err)
 	}
 
-	opt := metav1.GetOptions{
-		ResourceVersion: "v1",
-	}
-
-	api, err := clientset.CoreV1().Namespaces().Get(context.Background(), ns, opt)
+	api, err := clientset.CoreV1().Namespaces().Get(context.Background(), ns, metav1.GetOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	teamName := api.Annotations["cloud-platform.justice.gov.uk/team-name"]
+
+	log.Println("teamName", teamName)
 
 	return teamName, nil
 }

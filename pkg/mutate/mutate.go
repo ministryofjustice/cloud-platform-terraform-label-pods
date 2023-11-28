@@ -5,6 +5,7 @@ package mutate
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 
 	"github.com/ministryofjustice/cloud-platform-label-pods/pkg/namespace"
 	"github.com/ministryofjustice/cloud-platform-label-pods/utils"
@@ -14,6 +15,7 @@ import (
 )
 
 var systemNamespaces = []string{
+	"cloud-platform-label-pods",
 	"calico-apiserver",
 	"calico-system",
 	"cert-manager",
@@ -48,6 +50,7 @@ func getGithubTeamName(ns string) string {
 }
 
 func Mutate(body []byte) ([]byte, error) {
+	log.Printf("recv: %s\n", string(body))
 	admReview := v1.AdmissionReview{}
 	if err := json.Unmarshal(body, &admReview); err != nil {
 		return nil, fmt.Errorf("unmarshaling request failed with %s", err)
@@ -105,6 +108,7 @@ func Mutate(body []byte) ([]byte, error) {
 			return nil, err // untested section
 		}
 	}
+	log.Printf("resp: %s\n", string(responseBody))
 
 	return responseBody, nil
 }

@@ -6,6 +6,8 @@ RUN addgroup -g 1000 -S appgroup && \
 
 RUN mkdir app
 
+RUN mkdir /etc/ssl/tmp
+
 RUN apk --no-cache add ca-certificates
 
 WORKDIR /app
@@ -21,7 +23,10 @@ RUN CGO_ENABLED=0 go build -o /app/main .
 RUN chown -R appuser:appgroup /app
 
 # second stage to obtain a very small image
-FROM scratch
+# FROM scratch
+FROM golang:1.21-alpine 
+
+COPY --from=builder /etc/ssl/tmp/ /etc/ssl/tmp/
 
 # copy the ca-certificate.crt from the build stage
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
