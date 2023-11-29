@@ -11,6 +11,7 @@ func main() {
 
 	r := init_app.InitGin(ginMode)
 
+	// to run this locally provide a self signed cert
 	err := r.RunTLS(":3000", "/etc/ssl/certs/tls.crt", "/etc/ssl/certs/tls.key")
 	if err != nil {
 		log.Fatal("Error starting server: ", err)

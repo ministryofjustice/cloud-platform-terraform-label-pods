@@ -17,7 +17,7 @@ spec:
       containers:
         - name: api
           # image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
-          image: jaskaransarkaria/cloud-platform-label-pods:test14
+          image: jaskaransarkaria/cloud-platform-label-pods:test15
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -37,9 +37,7 @@ spec:
       initContainers:
         - name: init
           # image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
-          image: jaskaransarkaria/cloud-platform-label-pods:test14
-          command: ["/bin/sh", "-c"]
-          args: ["cp -r /etc/ssl/certs/* /artifact/ && cp /etc/ssl/tmp/tls.crt /artifact && cp /etc/ssl/tmp/ca.crt /artifact && cp /etc/ssl/tmp/tls.key /artifact"]
+          image: jaskaransarkaria/cloud-platform-label-pods:init1
           volumeMounts:
           - name: ssl-certs
             mountPath: /etc/ssl/tmp

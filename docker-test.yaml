@@ -3,5 +3,7 @@ fileExistenceTests:
   - name: "cloud-platform-label-pods api binary"
     path: "/app/main"
     shouldExist: true
-
+  - name: "cloud-platform-label-pods api binary"
+    path: "/etc/ssl/certs/ca-certificates.crt"
+    shouldExist: true
 

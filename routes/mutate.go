@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	m "github.com/ministryofjustice/cloud-platform-label-pods/pkg/mutate"
+	n "github.com/ministryofjustice/cloud-platform-label-pods/pkg/namespace"
 	"github.com/ministryofjustice/cloud-platform-label-pods/utils"
 )
 
@@ -23,7 +24,9 @@ func initMutatePod(r *gin.Engine) {
 			utils.SendResponse(c, errObj)
 		}
 
-		mutated, err := m.Mutate(body)
+		getGithubTeamnameFn := n.InitGetGithubTeamName(n.GetTeamNameFromNs)
+
+		mutated, err := m.Mutate(body, getGithubTeamnameFn)
 		if err != nil {
 			errObj := utils.Response{
 				Status: http.StatusInternalServerError,
