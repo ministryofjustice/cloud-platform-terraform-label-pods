@@ -13,11 +13,10 @@ The service is a mutating admission controller webhook.
 ### Steps to production
 
 1. add unit tests and remove logging
-1. update docker tests to check for ca.cert
-1. lock down rbac
-1. reject admissions properly
+1. reject admissions properly (this is done waiting unit tests)
+1. lock down rbac (create a sa and pass to the deployment, and create a specific cluster role)
 1. exclude current namespace from webhook
-1. pass proper prod vars to prod deploy
-1. fill out readme
-1. on deploy increment helm chart app version
-1. pull list of system namespaces from somewhere
+1. fill out readme (with diagram?)
+
+1. on deploy increment helm chart app version (stretch)
+1. pull list of system namespaces from somewhere (stretch)
