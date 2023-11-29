@@ -12,7 +12,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func createAdmReviewFail(admReview *v1.AdmissionReview, resp v1.AdmissionResponse, failureMsg string) ([]byte, error) {
+func createAdmReviewFail(admReview v1.AdmissionReview, resp v1.AdmissionResponse, failureMsg string) ([]byte, error) {
 	resp.Allowed = false
 	resp.Result = &metav1.Status{
 		Status:  "Failure",
@@ -27,7 +27,7 @@ func createAdmReviewFail(admReview *v1.AdmissionReview, resp v1.AdmissionRespons
 	return responseBody, nil
 }
 
-func createAdmReviewSucc(admReview *v1.AdmissionReview, resp v1.AdmissionResponse, githubTeamName string) ([]byte, error) {
+func createAdmReviewSucc(admReview v1.AdmissionReview, resp v1.AdmissionResponse, githubTeamName string) ([]byte, error) {
 	resp.AuditAnnotations = map[string]string{
 		"metadata.label.github_teams": "mutation added for identification",
 	}
@@ -72,18 +72,19 @@ func Mutate(body []byte, getGithubTeamName func(string) string) ([]byte, error) 
 	var pod *corev1.Pod
 
 	admReview := v1.AdmissionReview{}
-	responseBody := []byte{}
-	admReq := admReview.Request
-	resp := v1.AdmissionResponse{}
-	resp.Allowed = true
-	resp.UID = admReq.UID
+	resp := v1.AdmissionResponse{
+		Allowed: true,
+	}
 
 	if err := json.Unmarshal(body, &admReview); err != nil {
 		return nil, err
 	}
 
+	admReq := admReview.Request
+	resp.UID = admReq.UID
+
 	if admReq == nil {
-		responseBody, failErr := createAdmReviewFail(&admReview, resp, "AdmissionReview request body is nil")
+		responseBody, failErr := createAdmReviewFail(admReview, resp, "AdmissionReview request body is nil")
 		if failErr != nil {
 			return nil, failErr
 		}
@@ -91,7 +92,7 @@ func Mutate(body []byte, getGithubTeamName func(string) string) ([]byte, error) 
 	}
 
 	if err := json.Unmarshal(admReq.Object.Raw, &pod); err != nil {
-		responseBody, failErr := createAdmReviewFail(&admReview, resp, fmt.Sprintf("unable unmarshal pod json object %v", err.Error()))
+		responseBody, failErr := createAdmReviewFail(admReview, resp, fmt.Sprintf("unable unmarshal pod json object %v", err.Error()))
 		if failErr != nil {
 			return nil, failErr
 		}
@@ -100,7 +101,7 @@ func Mutate(body []byte, getGithubTeamName func(string) string) ([]byte, error) 
 
 	githubTeamName := getGithubTeamName(pod.GetNamespace())
 
-	responseBody, succErr := createAdmReviewSucc(&admReview, resp, githubTeamName)
+	responseBody, succErr := createAdmReviewSucc(admReview, resp, githubTeamName)
 	if succErr != nil {
 		return nil, succErr
 	}
