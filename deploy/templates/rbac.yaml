@@ -17,12 +17,12 @@ roleRef:
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: cloud-platform-label-pods-cluster-admin
+  name: cloud-platform-label-pods-view
   namespace: cloud-platform-label-pods
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: cluster-admin
+  name: view
 subjects:
   - kind: ServiceAccount
     name: default
