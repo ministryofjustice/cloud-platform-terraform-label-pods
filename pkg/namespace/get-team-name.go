@@ -65,7 +65,5 @@ func GetTeamNameFromNs(ns string) (string, error) {
 
 	teamName := api.Annotations["cloud-platform.justice.gov.uk/team-name"]
 
-	log.Println("teamName", teamName)
-
 	return teamName, nil
 }

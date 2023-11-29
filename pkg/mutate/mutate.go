@@ -81,22 +81,25 @@ func Mutate(body []byte, getGithubTeamName func(string) string) ([]byte, error) 
 	}
 
 	admReq := admReview.Request
-	resp.UID = admReq.UID
 
 	if admReq == nil {
 		responseBody, failErr := createAdmReviewFail(admReview, resp, "AdmissionReview request body is nil")
 		if failErr != nil {
 			return nil, failErr
 		}
+		log.Printf("resp: %s\n", string(responseBody))
 		return responseBody, nil
 	}
+
+	resp.UID = admReq.UID
 
 	if err := json.Unmarshal(admReq.Object.Raw, &pod); err != nil {
 		responseBody, failErr := createAdmReviewFail(admReview, resp, fmt.Sprintf("unable unmarshal pod json object %v", err.Error()))
 		if failErr != nil {
 			return nil, failErr
 		}
-		return responseBody, err
+		log.Printf("resp: %s\n", string(responseBody))
+		return responseBody, nil
 	}
 
 	githubTeamName := getGithubTeamName(pod.GetNamespace())

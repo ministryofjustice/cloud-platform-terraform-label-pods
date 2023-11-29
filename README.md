@@ -12,8 +12,6 @@ The service is a mutating admission controller webhook.
 
 ### Steps to production
 
-1. add unit tests and remove logging
-1. reject admissions properly (this is done waiting unit tests)
 1. lock down rbac (create a sa and pass to the deployment, and create a specific cluster role)
 1. exclude current namespace from webhook
 1. fill out readme (with diagram?)
