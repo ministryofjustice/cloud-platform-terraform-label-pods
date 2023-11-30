@@ -16,8 +16,7 @@ spec:
     spec:
       containers:
         - name: api
-          # image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
-          image: jaskaransarkaria/cloud-platform-label-pods:test18
+          image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -38,5 +37,4 @@ spec:
         - name: ssl-certs
           secret:
             secretName: webhook-server-cert 
-
                     

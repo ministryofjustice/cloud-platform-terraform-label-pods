@@ -36,20 +36,6 @@ jobs:
         - name: Checkout
           uses: actions/checkout@v4
 
-        - name: Set cluster
-          id: set-cluster
-          shell: bash
-          run: |
-            if [ "${{ inputs.env }}" == "development" ]
-            then
-              echo "CLUSTER=live-2" >> $GITHUB_OUTPUT
-              echo "INGRESS_COLOUR=blue" >> $GITHUB_OUTPUT
-            elif [ ${{ inputs.env }} == "production" ]
-            then
-              echo "CLUSTER=live" >> $GITHUB_OUTPUT
-              echo "INGRESS_COLOUR=green" >> $GITHUB_OUTPUT
-            fi
-
         - name: Create cert certificate-authority
           id: create-cert-authority
           shell: bash
@@ -82,9 +68,7 @@ jobs:
               ecrUrl: ${{ secrets.ecr_url }}
               imageTag: ${{ inputs.image_tag }}
               cluster: ${{ steps.set-cluster.outputs.CLUSTER }}
-              ingressIdentifier: api-${{ secrets.kube_namespace }}-${{ steps.set-cluster.outputs.INGRESS_COLOUR }}
               namespace: ${{ secrets.kube_namespace }}
           env:
             KUBECONFIG_FILE: ${{ env.FLAT_KUBE_CONFIG }}
-
 
