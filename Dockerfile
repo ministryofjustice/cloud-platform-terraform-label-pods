@@ -4,7 +4,7 @@ FROM golang:1.21-alpine AS builder
 RUN addgroup -g 1000 -S appgroup && \
   adduser -u 1000 -S appuser -G appgroup
 
-RUN mkdir app
+RUN mkdir -p app/certs
 
 RUN apk --no-cache add ca-certificates
 
@@ -26,7 +26,7 @@ COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 # copy user permissions from builder
 COPY --from=builder /etc/passwd /etc/passwd
 
-COPY --from=builder /app/main /app/main
+COPY --from=builder /app /app
 
 USER 1000
 

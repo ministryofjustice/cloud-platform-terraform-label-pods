@@ -17,7 +17,7 @@ spec:
       containers:
         - name: api
           # image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
-          image: jaskaransarkaria/cloud-platform-label-pods:test17
+          image: jaskaransarkaria/cloud-platform-label-pods:test18
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
@@ -28,28 +28,13 @@ spec:
                 port: 3000
               initialDelaySeconds: 2
           volumeMounts:
-            - mountPath: "/etc/ssl/certs"
-              name: tmp
-              readOnly: false
+          - name: ssl-certs
+            mountPath: /app/certs/
+            readOnly: false
           env:
             - name: GIN_MODE
               value: "release"
-      initContainers:
-        - name: init
-          # image: '{{ .Values.ecrUrl }}:{{ .Values.imageTag }}'
-          image: jaskaransarkaria/cloud-platform-label-pods:init5
-          command: ["/bin/sh", "-c"]
-          args: ["cp -r /etc/ssl/certs/* /artifact/ && cp /etc/ssl/tmp/tls.crt /artifact && cp /etc/ssl/tmp/ca.crt /artifact && cp /etc/ssl/tmp/tls.key /artifact"]
-          volumeMounts:
-          - name: ssl-certs
-            mountPath: /etc/ssl/tmp
-            readOnly: false
-          - name: tmp
-            mountPath: /artifact
-            readOnly: false
       volumes:
-        - name: tmp
-          emptyDir: {}
         - name: ssl-certs
           secret:
             secretName: webhook-server-cert 
