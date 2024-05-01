@@ -36,6 +36,14 @@ func initMutatePod(r *gin.Engine) {
 			utils.SendResponse(c, errObj)
 		}
 
-		c.Writer.Write(mutated)
+		_, writeErr := c.Writer.Write(mutated)
+		if writeErr != nil {
+			errObj := utils.Response{
+				Status: http.StatusInternalServerError,
+				Data:   nil,
+			}
+
+			utils.SendResponse(c, errObj)
+		}
 	})
 }
