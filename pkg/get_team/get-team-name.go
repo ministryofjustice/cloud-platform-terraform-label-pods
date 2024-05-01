@@ -1,8 +1,9 @@
-package namespace
+package get_team
 
 import (
 	"context"
 	"log"
+	"strings"
 
 	"github.com/ministryofjustice/cloud-platform-label-pods/utils"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -47,7 +48,7 @@ func InitGetGithubTeamName(getTeamName func(string) (string, error)) func(string
 	}
 }
 
-func GetTeamNameFromNs(ns string) (string, error) {
+func GetTeamName(ns string) (string, error) {
 	config, err := rest.InClusterConfig()
 	if err != nil {
 		log.Fatal(err)
@@ -58,12 +59,40 @@ func GetTeamNameFromNs(ns string) (string, error) {
 		log.Fatal(err)
 	}
 
-	api, err := clientset.CoreV1().Namespaces().Get(context.Background(), ns, metav1.GetOptions{})
+	teamNameFromNS := getTeamNameFromNS(clientset, ns)
+	teamNamesFromRBAC := getTeamNameFromRBAC(clientset, ns)
+
+	teamName := teamNameFromNS + " " + teamNamesFromRBAC
+
+	return teamName, nil
+}
+
+func getTeamNameFromNS(client *kubernetes.Clientset, ns string) string {
+	api, err := client.CoreV1().Namespaces().Get(context.Background(), ns, metav1.GetOptions{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	teamName := api.Annotations["cloud-platform.justice.gov.uk/team-name"]
+	return api.Annotations["cloud-platform.justice.gov.uk/team-name"]
+}
 
-	return teamName, nil
+func getTeamNameFromRBAC(client *kubernetes.Clientset, ns string) string {
+	teamNames := ""
+
+	rolebindings, err := client.RbacV1().RoleBindings(ns).List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, rb := range rolebindings.Items {
+		for _, subj := range rb.Subjects {
+			if strings.Contains(subj.Name, "github:") {
+				teamName := subj.Name[6 : len(subj.Name)-1]
+
+				teamNames = teamNames + " " + teamName
+			}
+		}
+	}
+
+	return teamNames
 }
