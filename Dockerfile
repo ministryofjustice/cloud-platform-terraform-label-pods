@@ -1,10 +1,10 @@
 # syntax=docker/dockerfile:1
-FROM golang:1.21-alpine AS builder
+FROM golang:1.21.3-alpine AS builder
 
 RUN addgroup -g 1000 -S appgroup && \
   adduser -u 1000 -S appuser -G appgroup
 
-RUN mkdir -p app/certs
+RUN mkdir -p /app/certs
 
 RUN apk --no-cache add ca-certificates
 

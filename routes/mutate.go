@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"io/ioutil"
+	"io"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,7 @@ import (
 
 func initMutatePod(r *gin.Engine) {
 	r.POST("/mutate/pod", func(c *gin.Context) {
-		body, err := ioutil.ReadAll(c.Request.Body)
+		body, err := io.ReadAll(c.Request.Body)
 		defer c.Request.Body.Close()
 
 		if err != nil {
@@ -36,6 +36,14 @@ func initMutatePod(r *gin.Engine) {
 			utils.SendResponse(c, errObj)
 		}
 
-		c.Writer.Write(mutated)
+		_, writeErr := c.Writer.Write(mutated)
+		if writeErr != nil {
+			errObj := utils.Response{
+				Status: http.StatusInternalServerError,
+				Data:   nil,
+			}
+
+			utils.SendResponse(c, errObj)
+		}
 	})
 }
