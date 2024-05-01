@@ -29,10 +29,6 @@ func TestMutate(t *testing.T) {
 		getGithubTeamName func(string) string
 	}
 
-	type want struct {
-		resultJSON []byte
-	}
-
 	tests := []struct {
 		name    string
 		args    args

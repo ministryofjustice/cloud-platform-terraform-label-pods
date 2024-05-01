@@ -35,12 +35,12 @@ func InitGetGithubTeamName(getTeamName func(string) (string, error)) func(string
 
 		githubTeamName, err = getTeamName(ns)
 		if err != nil {
-			return "webops"
+			return "all-org-members"
 		}
 
 		isSystemNs := utils.Contains(systemNamespaces, ns)
 		if isSystemNs {
-			githubTeamName = "webops"
+			return "all-org-members"
 		}
 
 		return githubTeamName
