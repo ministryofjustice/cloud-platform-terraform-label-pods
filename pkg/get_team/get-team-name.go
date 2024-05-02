@@ -59,21 +59,9 @@ func GetTeamName(ns string) (string, error) {
 		log.Fatal(err)
 	}
 
-	teamNameFromNS := getTeamNameFromNS(clientset, ns)
 	teamNamesFromRBAC := getTeamNameFromRBAC(clientset, ns)
 
-	teamName := teamNameFromNS + " " + teamNamesFromRBAC
-
-	return teamName, nil
-}
-
-func getTeamNameFromNS(client *kubernetes.Clientset, ns string) string {
-	api, err := client.CoreV1().Namespaces().Get(context.Background(), ns, metav1.GetOptions{})
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return api.Annotations["cloud-platform.justice.gov.uk/team-name"]
+	return teamNamesFromRBAC, nil
 }
 
 func getTeamNameFromRBAC(client *kubernetes.Clientset, ns string) string {
@@ -85,11 +73,15 @@ func getTeamNameFromRBAC(client *kubernetes.Clientset, ns string) string {
 	}
 
 	for _, rb := range rolebindings.Items {
-		for _, subj := range rb.Subjects {
+		for i, subj := range rb.Subjects {
 			if strings.Contains(subj.Name, "github:") {
-				teamName := subj.Name[6 : len(subj.Name)-1]
+				teamName := subj.Name[7:len(subj.Name)]
 
-				teamNames = teamNames + " " + teamName
+				if i == 0 {
+					teamNames = teamName
+					continue
+				}
+				teamNames = teamNames + "_" + teamName
 			}
 		}
 	}
