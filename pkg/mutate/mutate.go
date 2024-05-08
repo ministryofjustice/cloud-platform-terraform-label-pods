@@ -39,7 +39,7 @@ func createAdmReviewSucc(admReview v1.AdmissionReview, resp v1.AdmissionResponse
 	p := []map[string]string{}
 	patch := map[string]string{
 		"op":    "add",
-		"path":  "/metadata/labels/github_teams",
+		"path":  "/metadata/annotations/github_teams",
 		"value": githubTeamName,
 	}
 	p = append(p, patch)
