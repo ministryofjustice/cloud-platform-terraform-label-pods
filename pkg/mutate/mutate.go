@@ -29,7 +29,7 @@ func createAdmReviewFail(admReview v1.AdmissionReview, resp v1.AdmissionResponse
 
 func createAdmReviewSucc(admReview v1.AdmissionReview, resp v1.AdmissionResponse, githubTeamName string) ([]byte, error) {
 	resp.AuditAnnotations = map[string]string{
-		"metadata.label.github_teams": "mutation added for identification",
+		"metadata.annotations.github_teams": "mutation added for identification",
 	}
 
 	// the actual mutation is done by a string in JSONPatch style, i.e. we don't _actually_ modify the object, but
