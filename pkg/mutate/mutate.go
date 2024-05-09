@@ -27,7 +27,7 @@ func createAdmReviewFail(admReview v1.AdmissionReview, resp v1.AdmissionResponse
 	return responseBody, nil
 }
 
-func createAdmReviewSucc(admReview v1.AdmissionReview, resp v1.AdmissionResponse, githubTeamName string) ([]byte, error) {
+func createAdmReviewSucc(admReview v1.AdmissionReview, resp v1.AdmissionResponse, githubTeamName string, createAnnoField bool) ([]byte, error) {
 	resp.AuditAnnotations = map[string]string{
 		"metadata.annotations.github_teams": "mutation added for identification",
 	}
@@ -36,13 +36,37 @@ func createAdmReviewSucc(admReview v1.AdmissionReview, resp v1.AdmissionResponse
 	// tell K8S how it should modifiy it
 	pT := v1.PatchTypeJSONPatch
 	resp.PatchType = &pT
-	p := []map[string]string{}
-	patch := map[string]string{
-		"op":    "add",
-		"path":  "/metadata/annotations/github_teams",
-		"value": githubTeamName,
+
+	type Annotations struct {
+		Value string `json:"value,omitempty"`
+	}
+
+	type Patch struct {
+		Op    string `json:"op"`
+		Path  string `json:"path"`
+		Value any    `json:"value"`
+	}
+
+	p := []Patch{}
+
+	if createAnnoField {
+		patch := Patch{
+			"add",
+			"/metadata/annotations",
+			nil,
+		}
+		patch.Value = new(Annotations)
+		p = append(p, patch)
+	}
+
+	patch := Patch{
+		"add",
+		"/metadata/annotations/github_teams",
+		githubTeamName,
 	}
 	p = append(p, patch)
+
+	log.Printf("patch: %s\n", p)
 
 	respPatch, patchErr := json.Marshal(p)
 	if patchErr != nil {
@@ -69,6 +93,8 @@ func createAdmReviewSucc(admReview v1.AdmissionReview, resp v1.AdmissionResponse
 func Mutate(body []byte, getGithubTeamName func(string) string) ([]byte, error) {
 	log.Printf("recv: %s\n", string(body))
 
+	annoFieldExists := true
+
 	var pod *corev1.Pod
 
 	admReview := v1.AdmissionReview{}
@@ -87,7 +113,7 @@ func Mutate(body []byte, getGithubTeamName func(string) string) ([]byte, error) 
 		if failErr != nil {
 			return nil, failErr
 		}
-		log.Printf("resp: %s\n", string(responseBody))
+		log.Printf("resp adm review fail admReq nil: %s\n", string(responseBody))
 		return responseBody, nil
 	}
 
@@ -98,18 +124,22 @@ func Mutate(body []byte, getGithubTeamName func(string) string) ([]byte, error) 
 		if failErr != nil {
 			return nil, failErr
 		}
-		log.Printf("resp: %s\n", string(responseBody))
+		log.Printf("resp unable to unmarshall pod json: %s\n", string(responseBody))
 		return responseBody, nil
+	}
+
+	if pod.Annotations == nil {
+		annoFieldExists = false
 	}
 
 	githubTeamName := getGithubTeamName(pod.GetNamespace())
 
-	responseBody, succErr := createAdmReviewSucc(admReview, resp, githubTeamName)
+	responseBody, succErr := createAdmReviewSucc(admReview, resp, githubTeamName, !annoFieldExists)
 	if succErr != nil {
 		return nil, succErr
 	}
 
-	log.Printf("resp: %s\n", string(responseBody))
+	log.Printf("resp success: %s\n", string(responseBody))
 
 	return responseBody, nil
 }
