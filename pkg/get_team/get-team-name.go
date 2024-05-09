@@ -27,6 +27,7 @@ var systemNamespaces = []string{
 	"velero",
 	"cloud-platform-canary-app-eks",
 	"overprovision",
+	"external-secrets-operator",
 } // TODO maybe we could get this list from environments (anything that's not in env)?
 
 func InitGetGithubTeamName(getTeamName func(string) (string, error)) func(string) string {
