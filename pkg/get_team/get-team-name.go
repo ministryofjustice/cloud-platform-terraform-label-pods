@@ -43,6 +43,10 @@ func InitGetGithubTeamName(getTeamName func(string) (string, error)) func(string
 			return "all-org-members"
 		}
 
+		if githubTeamName == "" {
+			return "all-org-members"
+		}
+
 		return githubTeamName
 	}
 }
