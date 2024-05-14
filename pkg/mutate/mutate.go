@@ -53,9 +53,8 @@ func createAdmReviewSucc(admReview v1.AdmissionReview, resp v1.AdmissionResponse
 		patch := Patch{
 			"add",
 			"/metadata/annotations",
-			nil,
+			new(Annotations),
 		}
-		patch.Value = new(Annotations)
 		p = append(p, patch)
 	}
 
