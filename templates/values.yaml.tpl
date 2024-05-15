@@ -1,0 +1,3 @@
+ecrUrl: "${ ecrUrl }"
+imageTag: "${ imageTag }"
+

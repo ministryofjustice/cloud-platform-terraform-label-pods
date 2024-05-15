@@ -8,7 +8,7 @@ The service is a mutating admission controller webhook. Given the [hard char lim
 
 ## Why? 
 
-> We need to identify who owns which logs, so that we can prevent users seeing logs they shouldn't
+> We need to identify who owns which logs, so that we can prevent users seeing logs they shouldn't. You can find the lua responsible for pulling the data from the label out and attaching it to the log field [here](https://github.com/ministryofjustice/cloud-platform-terraform-logging/blob/main/templates/fluent-bit.yaml.tpl)
 
 ## How?
 
@@ -22,9 +22,13 @@ Although we are creating a mutating webhook, we actually aren't mutating anythin
 
 # Development
 
-The easiest way to make changes to the api is to deploy to a new namespace in a test cluster (you'll also need to apply a new [cluster role](https://github.com/ministryofjustice/cloud-platform-environments/blob/9ac868069ab515ffaca66685d5cb59ee6cf1717e/namespaces/live.cloud-platform.service.justice.gov.uk/user-roles.yaml#L86), a [cluster role binding](https://github.com/ministryofjustice/cloud-platform-environments/blob/9ac868069ab515ffaca66685d5cb59ee6cf1717e/namespaces/live.cloud-platform.service.justice.gov.uk/cloud-platform-label-pods/01-rbac.yaml#L17), a [self signed cert](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/cloud-platform-label-pods/05-self-signed-cert.yaml) and a [mutating web hook](https://github.com/ministryofjustice/cloud-platform-environments/blob/main/namespaces/live.cloud-platform.service.justice.gov.uk/cloud-platform-label-pods/06-mutating-webhook.yaml))
+The easist way to make changes to the api is to deploy the app via terraform and then adjust the ecr url variable and image tag to point to your test container.
 
 Once deployed you can watch the logs and inspect the admission requests and responses as you spin up pods.
+
+# Deploying to prod
+
+Merge changes into main and make a release, this will build and push the latest code to our ecr repo. Then update the terraform to point to the new release tag.
 
 ### Steps to production
 
