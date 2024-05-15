@@ -8,7 +8,7 @@ The service is a mutating admission controller webhook. Given the [hard char lim
 
 ## Why? 
 
-> We need to identify who owns which logs, so that we can prevent users seeing logs they shouldn't
+> We need to identify who owns which logs, so that we can prevent users seeing logs they shouldn't. You can find the lua responsible for pulling the data from the label out and attaching it to the log field [here](https://github.com/ministryofjustice/cloud-platform-terraform-logging/blob/main/templates/fluent-bit.yaml.tpl)
 
 ## How?
 
