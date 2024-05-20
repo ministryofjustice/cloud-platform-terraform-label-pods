@@ -18,7 +18,7 @@ jobs:
     with:
       env: production
       image_tag: ${{ github.ref_name }}
-      ecr_repo: webops/cloud-platform-label-pods-ecr
+      ecr_repo: webops/cloud-platform-terraform-label-pods
       aws_region: eu-west-2
     secrets:
       ecr_role_to_assume: ${{ secrets.ECR_ROLE_TO_ASSUME }}
