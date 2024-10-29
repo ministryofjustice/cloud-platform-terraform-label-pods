@@ -82,11 +82,11 @@ func getTeamNameFromRBAC(client *kubernetes.Clientset, ns string) (string, error
 	}
 
 	for _, rb := range rolebindings.Items {
-		for i, subj := range rb.Subjects {
+		for _, subj := range rb.Subjects {
 			if strings.Contains(subj.Name, "github:") {
 				teamName := subj.Name[7:len(subj.Name)]
 
-				if i == 0 {
+				if len(teamNames) == 0 {
 					teamNames = teamName
 					continue
 				}
