@@ -1,7 +1,8 @@
 module github.com/ministryofjustice/cloud-platform-label-pods
 
-go 1.21.3
-toolchain go1.22.5
+go 1.22.0
+
+toolchain go1.23.2
 
 require (
 	github.com/gin-contrib/zap v0.2.0
