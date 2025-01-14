@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"net/http"
+	"time"
 
 	"github.com/ministryofjustice/cloud-platform-label-pods/init_app"
 )
@@ -11,8 +13,16 @@ func main() {
 
 	r := init_app.InitGin(ginMode)
 
+	server := &http.Server{
+		Addr:         ":3000",
+		Handler:      r,
+		ReadTimeout:  30 * time.Second,
+		WriteTimeout: 30 * time.Second,
+		IdleTimeout:  5 * time.Second,
+	}
+
 	// to run this locally provide a self signed cert
-	err := r.RunTLS(":3000", "/app/certs/tls.crt", "/app/certs/tls.key")
+	err := server.ListenAndServeTLS("/app/certs/tls.crt", "/app/certs/tls.key")
 	if err != nil {
 		log.Fatal("Error starting server: ", err)
 	}
