@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"time"
 
@@ -22,8 +21,5 @@ func main() {
 	}
 
 	// to run this locally provide a self signed cert
-	err := server.ListenAndServeTLS("/app/certs/tls.crt", "/app/certs/tls.key")
-	if err != nil {
-		log.Fatal("Error starting server: ", err)
-	}
+	server.ListenAndServeTLS("/app/certs/tls.crt", "/app/certs/tls.key")
 }
