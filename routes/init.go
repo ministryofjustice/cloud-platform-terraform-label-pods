@@ -25,8 +25,4 @@ func InitLogger(r *gin.Engine) {
 	//   - Logs to stdout.
 	//   - RFC3339 with UTC time format.
 	r.Use(ginzap.Ginzap(logger, time.RFC3339, true))
-
-	// Logs all panic to error log
-	//   - stack means whether output the stack info.
-	r.Use(ginzap.RecoveryWithZap(logger, true))
 }
